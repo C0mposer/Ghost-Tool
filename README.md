@@ -1,4 +1,4 @@
-# Donwload Ghosts
+# Download Ghosts
 
 To find ghosts made by top level players in the Spyro community: [See Here](https://docs.google.com/spreadsheets/d/1FRsIFruvudBQzKBPcCEm27SErnol9FkRNUDLPE_SKMI/edit?gid=0#gid=0)
 
