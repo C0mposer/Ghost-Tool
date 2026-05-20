@@ -23,6 +23,8 @@ export PATH=$PS2DEV/ee/bin:$PS2DEV/iop/bin:$PS2SDK/bin:$PATH
 SRCDIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SRCDIR"
 
+DISTDIR="$SRCDIR/dist"
+OUTPUT_ELF="$DISTDIR/ghost_tool.elf"
 SFX_WAV="$SRCDIR/../sfx.wav"
 
 # NETWORK=1 enables unfinished online leaderboard loading. It is off by default
@@ -49,7 +51,9 @@ echo "=== Ghost Loader Build ==="
 echo ""
 
 # Clean
-rm -f ghost_loader.elf ghostwr.irx ghostwr.o ghostrd.irx ghostrd.o \
+mkdir -p "$DISTDIR"
+rm -f ghost_tool.elf ghost_loader.elf "$OUTPUT_ELF" \
+      ghostwr.irx ghostwr.o ghostrd.irx ghostrd.o \
       main.o net.o ui_tex.o ui_tex_table.o ui_sky_preview.o skybox_table.o \
       ghostwr_irx.o ghostwr_irx.s ghostrd_irx.o ghostrd_irx.s \
       iomanX_irx.o  iomanX_irx.s  fileXio_irx.o fileXio_irx.s \
@@ -251,10 +255,10 @@ fi
 # ===================================================
 # Step 6: Link final ELF
 # ===================================================
-echo "[7/7] Linking ghost_loader.elf..."
+echo "[7/7] Linking dist/ghost_tool.elf..."
 ee-gcc -mno-crt0 -T"$PS2SDK/ee/startup/linkfile" \
     -D_EE $EE_FEATURE_FLAGS -O2 -G0 -Wall \
-    -o ghost_loader.elf \
+    -o "$OUTPUT_ELF" \
     "$PS2SDK/ee/startup/crt0.o" \
     main.o ui_tex.o ui_tex_table.o $NETWORK_OBJS \
     ghostwr_irx.o ghostrd_irx.o iomanX_irx.o fileXio_irx.o \
@@ -267,15 +271,7 @@ ee-gcc -mno-crt0 -T"$PS2SDK/ee/startup/linkfile" \
 
 echo ""
 echo "=== BUILD SUCCESS ==="
-ls -la ghost_loader.elf ghostwr.irx ghostrd.irx
+ls -la "$OUTPUT_ELF" ghostwr.irx ghostrd.irx
 echo ""
-echo "Copy ghost_loader.elf to your USB drive and launch with uLaunchELF."
+echo "dist/ghost_tool.elf built successfully :)"
 echo ""
-if [ "${NETWORK:-}" = "1" ]; then
-    echo "Network mode enabled: optional mass:ghost_server.txt on USB (first line: IP or host:port)."
-    echo "Default is NET_DEFAULT_SERVER_HOST in net.h if the file is missing."
-    echo "From ghost-server/:  python3 -m http.server 8080"
-    echo "Skybox previews are embedded from ghost-server/skybox/*.raw (rebuild after PNG changes)."
-else
-    echo "Network mode disabled. Set NETWORK=1 to build the unfinished leaderboard path."
-fi
